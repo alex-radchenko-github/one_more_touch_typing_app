@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {codeSnippets} from "./codeSnippets";
 import CodeDisplay from "./components/CodeDisplay";
 
@@ -86,22 +86,27 @@ export const App = () => {
 	console.log(highlights)
 	console.log(currentIndex)
 
-	// Handle change in dropdown selection
-	const handleSelectionChange = (event) => {
+	
+	const handleSelectionChange = (event: { target: { value: string | number; }; }) => {
+		// @ts-ignore
 		setCurrentCode(codeSnippets[event.target.value]);
 		setCurrentIndex(0);
 		setHighlights([{ index: 0, style: 'current' }])
 	};
 
+	// @ts-ignore
 	return (
 		<div>
-			<select onChange={handleSelectionChange} value={Object.keys(codeSnippets).find(key => codeSnippets[key] === currentCode)}>
+			
+			<select onChange={handleSelectionChange} value={Object.keys(codeSnippets).find(	// @ts-ignore
+				key => codeSnippets[key] === currentCode)}>
 				{Object.keys(codeSnippets).map(key => (
 					<option key={key} value={key}>{key}</option>
 				))}
 			</select>
 			<CodeDisplay
 				codeText={currentCode}
+				// @ts-ignore
 				highlights={highlights}
 			/>
 		</div>

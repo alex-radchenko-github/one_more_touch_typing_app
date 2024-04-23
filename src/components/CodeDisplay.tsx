@@ -2,7 +2,7 @@ import React from 'react';
 
 interface Highlight {
 	index: number;
-	style: 'current' | 'visited' | 'error';
+	style: 'current' | 'visited' | 'error' | 'nostyle';
 }
 
 interface CodeDisplayProps {
@@ -18,9 +18,10 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ codeText, highlights }) => {
 		
 		highlights.sort((a, b) => a.index - b.index).forEach((highlight, i) => {
 			const { index, style } = highlight;
-			let before = codeText.substring(lastIndex, index);
-			let character = codeText[index];
-			let after = codeText.substring(index + 1);
+			const before = codeText.substring(lastIndex, index);
+			const character = codeText[index];
+			// @ts-ignore
+			const after = codeText.substring(index + 1);
 			let cssStyle = {};
 			
 			switch (style) {

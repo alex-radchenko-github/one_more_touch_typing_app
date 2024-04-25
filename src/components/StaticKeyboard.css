@@ -5,6 +5,11 @@
 
 .groupByFinger {
   border: 1px solid black !important;
-  
-  
+}
+
+.kb {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 800px;
 }

@@ -5,25 +5,26 @@ import {getFingerGroup} from "./components/fingerGroups.ts";
 import {isUpperCase} from "./components/isUpperCase.ts";
 import StaticKeyboard from './components/StaticKeyboard.tsx';
 import Fingers from './components/Hands.tsx';
+import "./App.css"
 
 
 export const App = () => {
 	const [currentCode, setCurrentCode] = useState(codeSnippets.twoSum);
 	const [currentIndex, setCurrentIndex] = useState(0);
-
+	
 	const [highlights, setHighlights] = useState([
-		{ index: currentIndex, style: 'current' },
+		{index: currentIndex, style: 'current'},
 	]);
-
-
+	
+	
 	useEffect(() => {
 		const handleKeydown = (event: KeyboardEvent) => {
 			// console.log(`Key pressed: ${event.key}`);
 			if (event.key === ' ' || event.key === 'Backspace') {
 				event.preventDefault();
 			}
-
-
+			
+			
 			// Handle backspace: decrement current index, prevent going below 0
 			
 			if (!event.shiftKey || (event.shiftKey && event.key !== 'Shift')) {
@@ -38,34 +39,33 @@ export const App = () => {
 					// Update highlights by removing the old current index and ensuring the new current index is highlighted
 					setHighlights(highlights.filter(h => h.index !== currentIndex).map(h => {
 						if (h.index === newIndex) {
-							return { ...h, style: 'current' }; // Update the style of the new current index
+							return {...h, style: 'current'}; // Update the style of the new current index
 						}
 						return h; // Leave other indices unchanged
 					}));
-				}
-				else {
-					if(event.key === currentCode[currentIndex]){
+				} else {
+					if (event.key === currentCode[currentIndex]) {
 						
 						const newIndex = currentIndex + 1;
 						setCurrentIndex(newIndex);
 						// Update all previous highlights to "nostyle" and add new "current" highlight
 						setHighlights([
 							...highlights.map(item =>
-								item.index === currentIndex ? { ...item, style: 'nostyle' } : item
+								item.index === currentIndex ? {...item, style: 'nostyle'} : item
 							),
-							{ index: newIndex, style: 'current' }
+							{index: newIndex, style: 'current'}
 						]);
 						
-					} else{
+					} else {
 						
 						const newIndex = currentIndex + 1;
 						setCurrentIndex(newIndex);
 						
 						setHighlights([
 							...highlights.map(item =>
-								item.index === currentIndex ? { ...item, style: 'error' } : item
+								item.index === currentIndex ? {...item, style: 'error'} : item
 							),
-							{ index: newIndex, style: 'current' }
+							{index: newIndex, style: 'current'}
 						]);
 						
 						
@@ -75,12 +75,10 @@ export const App = () => {
 			}
 			
 			
-			
-
 		}
-
+		
 		window.addEventListener('keydown', handleKeydown);
-
+		
 		// Clean up the event listener when the component unmounts
 		return () => {
 			window.removeEventListener('keydown', handleKeydown);
@@ -89,13 +87,13 @@ export const App = () => {
 	
 	// console.log(highlights)
 	// console.log(currentIndex)
-
+	
 	
 	const handleSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		// @ts-ignore
 		setCurrentCode(codeSnippets[event.target.value]);
 		setCurrentIndex(0);
-		setHighlights([{ index: 0, style: 'current' }])
+		setHighlights([{index: 0, style: 'current'}])
 		event.target.blur();
 		
 	};
@@ -126,14 +124,18 @@ export const App = () => {
 				// @ts-ignore
 				highlights={highlights}
 			/>
-			<StaticKeyboard activeKeys={[`${currentCode[currentIndex]}`]} shiftActive={isUpperCase(currentCode[currentIndex])}  />
+			<div className="kbBlock">
+				<StaticKeyboard activeKeys={[`${currentCode[currentIndex]}`]}
+				                shiftActive={isUpperCase(currentCode[currentIndex])}/>
+			
+			</div>
 			<div>
 				
 				<Fingers hands={[
 					// @ts-ignore
-					{ type: 'left', highlightedFingers: hands.left },
+					{type: 'left', highlightedFingers: hands.left},
 					// @ts-ignore
-					{ type: 'right', highlightedFingers: hands.right },
+					{type: 'right', highlightedFingers: hands.right},
 				]}
 				/>
 			</div>

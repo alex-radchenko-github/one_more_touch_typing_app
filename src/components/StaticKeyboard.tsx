@@ -29,7 +29,7 @@ const StaticKeyboard = ({activeKeys, shiftActive}) => {
 	}, []);
 	
 	return (
-		<div>
+		<div className="kb">
 			<Keyboard
 				layoutName={layoutName}
 				layout={{

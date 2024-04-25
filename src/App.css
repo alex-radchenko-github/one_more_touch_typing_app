@@ -1,17 +1,24 @@
-.keyboard-row {
+/*.keyboard-row {*/
+/*  display: flex;*/
+/*}*/
+
+/*.button, .hands div {*/
+/*  padding: 10px;*/
+/*  margin: 5px;*/
+/*  border: 1px solid black;*/
+/*}*/
+
+/*.pressed {*/
+/*  background-color: #aaa;*/
+/*}*/
+
+/*.highlighted {*/
+/*  background-color: yellow;*/
+/*}*/
+
+.kbBlock {
   display: flex;
-}
-
-.button, .hands div {
-  padding: 10px;
-  margin: 5px;
-  border: 1px solid black;
-}
-
-.pressed {
-  background-color: #aaa; // Серый цвет для нажатых клавиш
-}
-
-.highlighted {
-  background-color: yellow; // Желтый цвет для выделенных пальцев
+  justify-content: center;
+  align-items: center;
+  
 }

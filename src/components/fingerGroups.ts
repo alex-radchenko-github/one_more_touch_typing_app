@@ -30,7 +30,7 @@ export function getFingerGroup(character: string) {
 				return fingerGroups[keys];
 			}
 		}
-		return "Unknown character";
+		return "right pinky";
 	}
 	
 }

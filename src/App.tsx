@@ -98,7 +98,8 @@ export const App = () => {
 		
 	};
 	// @ts-ignore
-	
+	console.log(currentCode[currentIndex])
+	console.log(getFingerGroup(currentCode[currentIndex]).split(" "))
 	const [handType, finger] = getFingerGroup(currentCode[currentIndex]).split(" ")
 	const hands = {
 		left: [] as string[],

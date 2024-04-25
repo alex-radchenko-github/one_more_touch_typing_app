@@ -1,0 +1,11 @@
+.codeWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 800px;
+}
+.pre {
+  width: 800px;
+  height: 300px;
+  overflow: auto;
+}

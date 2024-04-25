@@ -120,11 +120,14 @@ export const App = () => {
 					<option key={key} value={key}>{key}</option>
 				))}
 			</select>
-			<CodeDisplay
-				codeText={currentCode}
-				// @ts-ignore
-				highlights={highlights}
-			/>
+			<div className="codeWrapper">
+				<CodeDisplay
+					codeText={currentCode}
+					// @ts-ignore
+					highlights={highlights}
+				/>
+			</div>
+
 			<div className="kbBlock">
 				<StaticKeyboard activeKeys={[`${currentCode[currentIndex]}`]}
 				                shiftActive={isUpperCase(currentCode[currentIndex])}/>

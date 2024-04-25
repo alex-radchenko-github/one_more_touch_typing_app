@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
+import styles from './CodeDisplay.module.css'
 
 interface Highlight {
 	index: number;
@@ -11,7 +12,10 @@ interface CodeDisplayProps {
 }
 
 const CodeDisplay: React.FC<CodeDisplayProps> = ({ codeText, highlights }) => {
-	// Function to render the text with highlights
+	
+		
+		
+		// Function to render the text with highlights
 	const renderTextWithHighlights = () => {
 		let elements = [];
 		let lastIndex = 0;
@@ -48,8 +52,8 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ codeText, highlights }) => {
 	};
 	
 	return (
-		<div>
-			<pre>{renderTextWithHighlights()}</pre>
+		<div className={styles.codeWrapper}>
+			<pre className={styles.pre}>{renderTextWithHighlights()}</pre>
 		</div>
 	);
 };

@@ -1,0 +1,66 @@
+.hands{
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+.hand{
+  margin: 0 50px 0;
+  float: left;
+}
+
+.finger{
+  width: 20px;
+  border-style: solid;
+  float: left;
+  border-width:1px;
+  border-color: black;
+  border-bottom-width: 0;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  background-color: white;
+}
+
+.finger1{
+  
+  height: 70px;
+  margin-top: 60px;
+}
+
+.finger2{
+  height: 100px;
+  margin-top: 30px;
+}
+
+.finger3{
+  height: 130px;
+  margin-top: 0;
+}
+
+
+.finger4{
+  height: 115px;
+  margin-top: 15px;
+}
+
+
+.finger5{
+  height: 60px;
+  margin-top: 90px;
+}
+.dorsal{
+  width: 100px;
+  height: 80px;
+  border-width:1px;
+  border-color: black;
+  border-style: solid;
+  margin-top: 130px;
+  border-radius: 0 0 80px 80px;
+  border-top-width: 0;
+}
+
+.highlighted{
+  background-color: #4d7ebf;
+  opacity: 1.0
+}
+
+

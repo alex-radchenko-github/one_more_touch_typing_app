@@ -1,6 +1,10 @@
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {codeSnippets} from "./codeSnippets";
 import CodeDisplay from "./components/CodeDisplay";
+import {getFingerGroup} from "./components/fingerGroups.ts";
+import {isUpperCase} from "./components/isUpperCase.ts";
+import StaticKeyboard from './components/StaticKeyboard.tsx';
+import Fingers from './components/Hands.tsx';
 
 
 export const App = () => {
@@ -14,7 +18,7 @@ export const App = () => {
 
 	useEffect(() => {
 		const handleKeydown = (event: KeyboardEvent) => {
-			console.log(`Key pressed: ${event.key}`);
+			// console.log(`Key pressed: ${event.key}`);
 			if (event.key === ' ' || event.key === 'Backspace') {
 				event.preventDefault();
 			}
@@ -83,19 +87,32 @@ export const App = () => {
 		};
 	}, [currentIndex, currentCode, highlights]);
 	
-	console.log(highlights)
-	console.log(currentIndex)
+	// console.log(highlights)
+	// console.log(currentIndex)
 
 	
-	const handleSelectionChange = (event: { target: { value: string | number; }; }) => {
+	const handleSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		// @ts-ignore
 		setCurrentCode(codeSnippets[event.target.value]);
 		setCurrentIndex(0);
 		setHighlights([{ index: 0, style: 'current' }])
+		event.target.blur();
+		
 	};
-
+	// @ts-ignore
+	
+	const [handType, finger] = getFingerGroup(currentCode[currentIndex]).split(" ")
+	const hands = {
+		left: [] as string[],
+		right: [] as string[]
+	};
+	// @ts-ignore
+	hands[handType].push(finger);
+	
+	// @ts-ignore
 	// @ts-ignore
 	return (
+		
 		<div>
 			
 			<select onChange={handleSelectionChange} value={Object.keys(codeSnippets).find(	// @ts-ignore
@@ -109,6 +126,17 @@ export const App = () => {
 				// @ts-ignore
 				highlights={highlights}
 			/>
+			<StaticKeyboard activeKeys={[`${currentCode[currentIndex]}`]} shiftActive={isUpperCase(currentCode[currentIndex])}  />
+			<div>
+				
+				<Fingers hands={[
+					// @ts-ignore
+					{ type: 'left', highlightedFingers: hands.left },
+					// @ts-ignore
+					{ type: 'right', highlightedFingers: hands.right },
+				]}
+				/>
+			</div>
 		</div>
 	);
 };

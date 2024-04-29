@@ -135,5 +135,21 @@ function useUndo(initialValue, limit = 10) {
 
 export default useUndo;
 
-	`
+	`,
+	'JS methods': `String Methods
+length slice substring substr replace replaceAll toUpperCase toLowerCase
+concat trim trimStart trimEnd padStart padEnd charAt charCodeAt split
+
+String Search
+indexOf lastIndexOf search match matchAll includes startsWith endsWith
+
+Array Methods
+length toString  pop push  shift  unshift  join
+delete  concat  flat  splice  slice
+
+Object Methods
+create assign defineProperty defineProperties getOwnPropertyDescriptor
+getOwnPropertyDescriptors getPrototypeOf setPrototypeOf keys values entries
+hasOwnProperty is getOwnPropertyNames getOwnPropertySymbols
+preventExtensions isExtensible seal isSealed freeze isFrozen`
 };

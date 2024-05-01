@@ -52,6 +52,7 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ codeText, highlights }) => {
 	};
 	
 	return (
+		
 		<div className={styles.codeWrapper}>
 			<pre className={styles.pre}>{renderTextWithHighlights()}</pre>
 		</div>

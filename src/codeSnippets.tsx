@@ -144,8 +144,8 @@ String Search
 indexOf lastIndexOf search match matchAll includes startsWith endsWith
 
 Array Methods
-length toString  pop push  shift  unshift  join
-delete  concat  flat  splice  slice
+length toString pop push shift unshift join
+delete concat flat splice slice
 
 Object Methods
 create assign defineProperty defineProperties getOwnPropertyDescriptor

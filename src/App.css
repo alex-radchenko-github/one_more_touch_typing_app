@@ -1,11 +1,31 @@
+.container{
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh
+}
+
+.sel{
+  flex: 0 1 auto
+}
+.cdWrapper{
+  display: flex;
+  justify-content: center;
+  /*align-items: center;*/
+  flex: 1 1 auto;
+  overflow: auto;
+  
+}
+.kbrdHandWrapper{
+  flex: 0 1 auto;
+}
 .kbBlock {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.codeWrapper{
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.fingers{
+  margin-top: -40px;
 }

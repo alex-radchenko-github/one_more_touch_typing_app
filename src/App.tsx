@@ -7,14 +7,17 @@ import StaticKeyboard from './components/StaticKeyboard.tsx';
 import Fingers from './components/Hands.tsx';
 import "./App.css"
 
-
 export const App = () => {
 	const [currentCode, setCurrentCode] = useState(codeSnippets.twoSum);
 	const [currentIndex, setCurrentIndex] = useState(0);
+	const [countErrors, setCountErrors] = useState(0);
 	
 	const [highlights, setHighlights] = useState([
 		{index: currentIndex, style: 'current'},
 	]);
+	const [timer, setTimer] = useState(0)
+	const [isTimerActive, setIsTimerActive] = useState(false);
+	
 	
 	
 	useEffect(() => {
@@ -24,6 +27,9 @@ export const App = () => {
 				event.preventDefault();
 			}
 			
+			if (!isTimerActive && event.key.length === 1 && event.key !== 'Shift') {
+				setIsTimerActive(true);
+			}
 			
 			// Handle backspace: decrement current index, prevent going below 0
 			
@@ -57,7 +63,7 @@ export const App = () => {
 						]);
 						
 					} else {
-						
+						setCountErrors(countErrors + 1)
 						const newIndex = currentIndex + 1;
 						setCurrentIndex(newIndex);
 						
@@ -83,8 +89,21 @@ export const App = () => {
 		return () => {
 			window.removeEventListener('keydown', handleKeydown);
 		};
-	}, [currentIndex, currentCode, highlights]);
+	}, [currentIndex, currentCode, highlights, isTimerActive]);
 	
+	useEffect(() => {
+		let interval: number | undefined
+		if (isTimerActive) {
+			interval = setInterval(() => {
+				setTimer((prevTimer) => prevTimer + 1);
+			}, 1000);
+		} else if (!isTimerActive && timer !== 0) {
+			clearInterval(interval!);
+		}
+		return () => {
+			if (interval) clearInterval(interval);
+		};
+	}, [isTimerActive]);
 	// console.log(highlights)
 	// console.log(currentIndex)
 	
@@ -95,11 +114,14 @@ export const App = () => {
 		setCurrentIndex(0);
 		setHighlights([{index: 0, style: 'current'}])
 		event.target.blur();
+		setCountErrors(0)
+		setTimer(0)
+		setIsTimerActive(false)
 		
 	};
 	// @ts-ignore
-	console.log(currentCode[currentIndex])
-	console.log(getFingerGroup(currentCode[currentIndex]).split(" "))
+	// console.log(currentCode[currentIndex])
+	// console.log(getFingerGroup(currentCode[currentIndex]).split(" "))
 	const [handType, finger] = getFingerGroup(currentCode[currentIndex]).split(" ")
 	const hands = {
 		left: [] as string[],
@@ -108,41 +130,52 @@ export const App = () => {
 	// @ts-ignore
 	hands[handType].push(finger);
 	
+	const formatTime = (totalSeconds: number) => {
+		const minutes = Math.floor(totalSeconds / 60);
+		const seconds = totalSeconds % 60;
+		return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+	};
+	
 	// @ts-ignore
 	// @ts-ignore
 	return (
-		
-		<div>
+		<div className="container">
+			<div className="sel">
+				<select onChange={handleSelectionChange} value={Object.keys(codeSnippets).find(	// @ts-ignore
+					key => codeSnippets[key] === currentCode)}>
+					{Object.keys(codeSnippets).map(key => (
+						<option key={key} value={key}>{key}</option>
+					))}
+				</select>
+				Errors: {countErrors} Timer: {formatTime(timer)}s
+
+			</div>
 			
-			<select onChange={handleSelectionChange} value={Object.keys(codeSnippets).find(	// @ts-ignore
-				key => codeSnippets[key] === currentCode)}>
-				{Object.keys(codeSnippets).map(key => (
-					<option key={key} value={key}>{key}</option>
-				))}
-			</select>
-			<div className="codeWrapper">
+			<div className="cdWrapper">
 				<CodeDisplay
 					codeText={currentCode}
 					// @ts-ignore
 					highlights={highlights}
 				/>
 			</div>
-
-			<div className="kbBlock">
-				<StaticKeyboard activeKeys={[`${currentCode[currentIndex]}`]}
-				                shiftActive={isUpperCase(currentCode[currentIndex])}/>
 			
-			</div>
-			<div>
+			<div className="kbrdHandWrapper">
+				<div className="kbBlock">
+					<StaticKeyboard activeKeys={[`${currentCode[currentIndex]}`]}
+					                shiftActive={isUpperCase(currentCode[currentIndex])}/>
 				
-				<Fingers hands={[
-					// @ts-ignore
-					{type: 'left', highlightedFingers: hands.left},
-					// @ts-ignore
-					{type: 'right', highlightedFingers: hands.right},
-				]}
-				/>
+				</div>
+				<div className="fingers">
+					<Fingers hands={[
+						// @ts-ignore
+						{type: 'left', highlightedFingers: hands.left},
+						// @ts-ignore
+						{type: 'right', highlightedFingers: hands.right},
+					]}
+					/>
+				</div>
 			</div>
+		
 		</div>
 	);
 };

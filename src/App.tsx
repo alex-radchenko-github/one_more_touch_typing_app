@@ -4,7 +4,7 @@ import CodeDisplay from "./components/CodeDisplay";
 import { getFingerGroup } from "./components/fingerGroups";
 import { isUpperCase } from "./components/isUpperCase";
 import StaticKeyboard from './components/StaticKeyboard';
-import Fingers, { HandProps, Hand, Finger } from './components/Hands';
+import Fingers, { HandProps, Finger } from './components/Hands';
 import "./App.css";
 
 enum HighlightStyle {

@@ -1,181 +1,199 @@
-import React, {useEffect, useState} from 'react';
-import {codeSnippets} from "./codeSnippets";
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { codeSnippets } from "./codeSnippets";
 import CodeDisplay from "./components/CodeDisplay";
-import {getFingerGroup} from "./components/fingerGroups.ts";
-import {isUpperCase} from "./components/isUpperCase.ts";
-import StaticKeyboard from './components/StaticKeyboard.tsx';
-import Fingers from './components/Hands.tsx';
-import "./App.css"
+import { getFingerGroup } from "./components/fingerGroups";
+import { isUpperCase } from "./components/isUpperCase";
+import StaticKeyboard from './components/StaticKeyboard';
+import Fingers, { HandProps, Hand, Finger } from './components/Hands';
+import "./App.css";
 
-export const App = () => {
+enum HighlightStyle {
+	Current = 'current',
+	NoStyle = 'nostyle',
+	Error = 'error'
+}
+
+interface Highlight {
+	index: number;
+	style: HighlightStyle;
+}
+
+interface HandConfig {
+	type: Hand;
+	highlightedFingers: Finger[];
+}
+
+export const App: React.FC = () => {
 	const [currentCode, setCurrentCode] = useState(codeSnippets.twoSum);
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [countErrors, setCountErrors] = useState(0);
-	
-	const [highlights, setHighlights] = useState([
-		{index: currentIndex, style: 'current'},
+	const [highlights, setHighlights] = useState<Highlight[]>([
+		{ index: 0, style: HighlightStyle.Current },
 	]);
-	const [timer, setTimer] = useState(0)
+	const [timer, setTimer] = useState(0);
 	const [isTimerActive, setIsTimerActive] = useState(false);
-	
-	
-	
-	useEffect(() => {
-		const handleKeydown = (event: KeyboardEvent) => {
-			// console.log(`Key pressed: ${event.key}`);
-			if (event.key === ' ' || event.key === 'Backspace') {
-				event.preventDefault();
-			}
-			
-			if (!isTimerActive && event.key.length === 1 && event.key !== 'Shift') {
-				setIsTimerActive(true);
-			}
-			
-			// Handle backspace: decrement current index, prevent going below 0
-			
-			if (!event.shiftKey || (event.shiftKey && event.key !== 'Shift')) {
-				
-				if (event.key === 'Backspace') {
-					if (currentIndex === 0 && highlights.length === 1) {
-						return;
-					}
-					
-					const newIndex = Math.max(0, currentIndex - 1);
-					setCurrentIndex(newIndex);
-					// Update highlights by removing the old current index and ensuring the new current index is highlighted
-					setHighlights(highlights.filter(h => h.index !== currentIndex).map(h => {
-						if (h.index === newIndex) {
-							return {...h, style: 'current'}; // Update the style of the new current index
-						}
-						return h; // Leave other indices unchanged
-					}));
-				} else {
-					if (event.key === currentCode[currentIndex]) {
-						
-						const newIndex = currentIndex + 1;
-						setCurrentIndex(newIndex);
-						// Update all previous highlights to "nostyle" and add new "current" highlight
-						setHighlights([
-							...highlights.map(item =>
-								item.index === currentIndex ? {...item, style: 'nostyle'} : item
-							),
-							{index: newIndex, style: 'current'}
-						]);
-						
-					} else {
-						setCountErrors(countErrors + 1)
-						const newIndex = currentIndex + 1;
-						setCurrentIndex(newIndex);
-						
-						setHighlights([
-							...highlights.map(item =>
-								item.index === currentIndex ? {...item, style: 'error'} : item
-							),
-							{index: newIndex, style: 'current'}
-						]);
-						
-						
-					}
-					
-				}
-			}
-			
-			
+
+	const handleKeyPress = useCallback((event: KeyboardEvent) => {
+		if (event.key === ' ') {
+			event.preventDefault();
 		}
-		
-		window.addEventListener('keydown', handleKeydown);
-		
-		// Clean up the event listener when the component unmounts
-		return () => {
-			window.removeEventListener('keydown', handleKeydown);
-		};
+
+		if (!isTimerActive && event.key.length === 1 && event.key !== 'Shift') {
+			setIsTimerActive(true);
+		}
+
+		if (!event.shiftKey || (event.shiftKey && event.key !== 'Shift')) {
+			if (event.key === 'Backspace') {
+				handleBackspace();
+			} else {
+				handleCorrectKeyPress(event.key);
+			}
+		}
 	}, [currentIndex, currentCode, highlights, isTimerActive]);
-	
+
+	const handleBackspace = useCallback(() => {
+		if (currentIndex === 0 && highlights.length === 1) return;
+
+		const newIndex = Math.max(0, currentIndex - 1);
+		setCurrentIndex(newIndex);
+		setHighlights(prev => 
+			prev.filter(h => h.index !== currentIndex)
+				.map(h => h.index === newIndex ? { ...h, style: HighlightStyle.Current } : h)
+		);
+	}, [currentIndex, highlights]);
+
+	const handleCorrectKeyPress = useCallback((key: string) => {
+		const isCorrect = key === currentCode[currentIndex];
+		const newIndex = currentIndex + 1;
+
+		setCurrentIndex(newIndex);
+		setCountErrors(prev => isCorrect ? prev : prev + 1);
+
+		setHighlights(prev => [
+			...prev.map(item => 
+				item.index === currentIndex 
+					? { ...item, style: isCorrect ? HighlightStyle.NoStyle : HighlightStyle.Error }
+					: item
+			),
+			{ index: newIndex, style: HighlightStyle.Current }
+		]);
+	}, [currentIndex, currentCode]);
+
 	useEffect(() => {
-		let interval: number | undefined
+		window.addEventListener('keydown', handleKeyPress);
+		return () => window.removeEventListener('keydown', handleKeyPress);
+	}, [handleKeyPress]);
+
+	useEffect(() => {
+		let interval: number | undefined;
 		if (isTimerActive) {
-			interval = setInterval(() => {
-				setTimer((prevTimer) => prevTimer + 1);
-			}, 1000);
+			interval = setInterval(() => setTimer(prev => prev + 1), 1000);
 		} else if (!isTimerActive && timer !== 0) {
-			clearInterval(interval!);
+			clearInterval(interval);
 		}
-		return () => {
-			if (interval) clearInterval(interval);
-		};
+		return () => { if (interval) clearInterval(interval); };
 	}, [isTimerActive]);
-	// console.log(highlights)
-	// console.log(currentIndex)
-	
-	
-	const handleSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		// @ts-ignore
-		setCurrentCode(codeSnippets[event.target.value]);
-		setCurrentIndex(0);
-		setHighlights([{index: 0, style: 'current'}])
+
+	const handleSelectionChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
+		const selectedSnippet = event.target.value as keyof typeof codeSnippets;
+		setCurrentCode(codeSnippets[selectedSnippet]);
+		resetState();
 		event.target.blur();
-		setCountErrors(0)
-		setTimer(0)
-		setIsTimerActive(false)
-		
-	};
-	// @ts-ignore
-	// console.log(currentCode[currentIndex])
-	// console.log(getFingerGroup(currentCode[currentIndex]).split(" "))
-	const [handType, finger] = getFingerGroup(currentCode[currentIndex]).split(" ")
-	const hands = {
-		left: [] as string[],
-		right: [] as string[]
-	};
-	// @ts-ignore
-	hands[handType].push(finger);
+	}, []);
+
+	const resetState = useCallback(() => {
+		setCurrentIndex(0);
+		setHighlights([{ index: 0, style: HighlightStyle.Current }]);
+		setCountErrors(0);
+		setTimer(0);
+		setIsTimerActive(false);
+	}, []);
+
+	const currentChar = currentCode[currentIndex];
+	const [handType, finger] = getFingerGroup(currentChar).split(" ") as ['left' | 'right', string];
 	
+	// Определяем руку для пробела на основе предыдущего символа
+	const prevChar = currentIndex > 0 ? currentCode[currentIndex - 1] : '';
+	const [prevHandType] = prevChar ? getFingerGroup(prevChar).split(" ") as ['left' | 'right', string] : ['left'];
+	const oppositeHandType: 'left' | 'right' = prevHandType === 'left' ? 'right' : 'left';
+	
+	const specialSymbolHands: Record<string, HandProps[]> = {
+		'=': [
+			{ type: 'right', highlightedFingers: ['pinky' as Finger] },
+			{ type: 'left', highlightedFingers: ['pinky' as Finger] }
+		]
+	};
+
+	const hands: HandProps[] = useMemo(() => {
+		// Проверяем специальные символы
+		if (specialSymbolHands[currentChar]) {
+			return specialSymbolHands[currentChar];
+		}
+
+		// Для пробела используем противоположную руку от предыдущего символа
+		if (currentChar === ' ') {
+			return [{
+				type: oppositeHandType,
+				highlightedFingers: ['thumb' as Finger]
+			}];
+		}
+
+		// Для обычных символов
+		const primaryHand: HandProps = { 
+			type: handType, 
+			highlightedFingers: [finger as Finger] 
+		};
+		
+		// Для заглавных букв добавляем вторую руку
+		if (isUpperCase(currentChar)) {
+			const shiftHand: HandProps = {
+				type: handType === 'left' ? 'right' : 'left',
+				highlightedFingers: ['pinky' as Finger]
+			};
+			return [primaryHand, shiftHand];
+		}
+		
+		return [primaryHand];
+	}, [currentChar, handType, finger, oppositeHandType]);
+
 	const formatTime = (totalSeconds: number) => {
 		const minutes = Math.floor(totalSeconds / 60);
 		const seconds = totalSeconds % 60;
 		return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 	};
-	
-	// @ts-ignore
-	// @ts-ignore
+
 	return (
 		<div className="container">
 			<div className="sel">
-				<select onChange={handleSelectionChange} value={Object.keys(codeSnippets).find(	// @ts-ignore
-					key => codeSnippets[key] === currentCode)}>
+				<select 
+					onChange={handleSelectionChange} 
+					value={Object.keys(codeSnippets).find(key => codeSnippets[key as keyof typeof codeSnippets] === currentCode)}
+				>
 					{Object.keys(codeSnippets).map(key => (
 						<option key={key} value={key}>{key}</option>
 					))}
 				</select>
 				Errors: {countErrors} Timer: {formatTime(timer)}s
-
 			</div>
 			
 			<div className="cdWrapper">
 				<CodeDisplay
 					codeText={currentCode}
-					// @ts-ignore
 					highlights={highlights}
 				/>
 			</div>
 			
 			<div className="kbrdHandWrapper">
 				<div className="kbBlock">
-					<StaticKeyboard activeKeys={[`${currentCode[currentIndex]}`]}
-					                shiftActive={isUpperCase(currentCode[currentIndex])}/>
-				
-				</div>
-				<div className="fingers">
-					<Fingers hands={[
-						// @ts-ignore
-						{type: 'left', highlightedFingers: hands.left},
-						// @ts-ignore
-						{type: 'right', highlightedFingers: hands.right},
-					]}
+					<StaticKeyboard 
+						activeKeys={[currentChar]}
+						shiftActive={isUpperCase(currentChar)}
 					/>
 				</div>
+				<div className="fingers">
+					<Fingers hands={hands} />
+				</div>
 			</div>
-		
 		</div>
 	);
 };

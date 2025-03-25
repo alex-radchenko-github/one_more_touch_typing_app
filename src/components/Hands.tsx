@@ -2,10 +2,10 @@ import classNames from 'classnames';
 import React from 'react';
 import styles from './hands.module.css';
 
-type Hand = 'left' | 'right';
-type Finger = 'thumb' | 'index' | 'middle' | 'ring' | 'pinky';
+export type Hand = 'left' | 'right';
+export type Finger = 'thumb' | 'index' | 'middle' | 'ring' | 'pinky';
 
-interface HandProps {
+export interface HandProps {
 	type: Hand;
 	highlightedFingers: Finger[];
 }
@@ -24,16 +24,20 @@ const Fingers: React.FC<FingersProps> = ({ hands }) => {
 				const order = hand.type === 'right' ? [...fingers].reverse() : fingers;
 				
 				return (
-					<div key={i} className={classNames(styles.hand, {
-						[styles.left_hand]: hand.type === 'left',
-						[styles.right_hand]: hand.type === 'right'
-					})}>
+					<div 
+						key={i} 
+						className={classNames(styles.hand, {
+							[styles.left_hand]: hand.type === 'left',
+							[styles.right_hand]: hand.type === 'right'
+						})}
+						data-label={hand.type === 'left' ? 'Left' : 'Right'}
+					>
 						{order.map((finger, index) => (
 							<div
 								key={finger}
 								className={classNames(
 									styles.finger,
-									styles[`finger${hand.type === 'right' ? 5 - index : index + 1}`], // Изменяем индекс стиля в зависимости от руки
+									styles[`finger${hand.type === 'right' ? 5 - index : index + 1}`],
 									{
 										[styles.highlighted]: hand.highlightedFingers.includes(finger)
 									}

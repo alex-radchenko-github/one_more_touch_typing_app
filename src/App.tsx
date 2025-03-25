@@ -18,11 +18,6 @@ interface Highlight {
 	style: HighlightStyle;
 }
 
-interface HandConfig {
-	type: Hand;
-	highlightedFingers: Finger[];
-}
-
 export const App: React.FC = () => {
 	const [currentCode, setCurrentCode] = useState(codeSnippets.twoSum);
 	const [currentIndex, setCurrentIndex] = useState(0);
